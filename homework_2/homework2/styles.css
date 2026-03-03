@@ -1,0 +1,188 @@
+:root {
+    --background-color: #0d1016;
+    --shelf-color: #221d2c;
+    --text-color: #fff;
+    --subtext-color: #bfc4d2;
+    --href-color: #fc00c9;
+    --href-hover-color: #b026c2;
+    --href-hover-visited: #9234c4;
+    --list-item-color: #1e2130;
+    --primary-color: #7400fe;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 32px;
+}
+
+a {
+    color: var(--href-color);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--href-hover-color);
+}
+
+a:visited {
+    color: var(--href-hover-visited);
+}
+
+h2 {
+    color: var(--subtext-color);
+    margin-bottom: 5px;
+}
+
+h3 {
+    margin-top: 5px;
+}
+
+ul {
+    padding: 0px;
+}
+
+li {
+    list-style: none;
+    display: inline-block;
+    background-color: var(--list-item-color);
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
+
+mark {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+}
+
+.horizontal {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+}
+
+.skills {
+    display: flex;
+    flex-direction: row;
+}
+
+.skills-section {
+    width: 33%;
+}
+
+.project-container {
+    display: flex;
+    flex-direction: row;
+    overflow-x: scroll;
+}
+
+.project {
+    margin: 10px;
+    width: 200px;
+    transition: all .4s ease;
+}
+
+.empty-project {
+    min-width: 0%;
+    transition: all 1s ease;
+}
+
+.project:hover ~ .empty-project {
+    min-width: 50%;
+}
+
+.project:hover {
+    transform: scale(1.03);
+}
+
+.project img {
+    border: 1px solid #25253a;
+    border-radius: 5px;
+}
+
+.project-images {
+    background-color: var(--shelf-color);
+    width: 25%;
+    height: 100vh;
+    opacity: 0;
+    pointer-events: none;
+    position: fixed;
+    top: 0px;
+    right: -25%;
+    transition: all 1s ease;
+}
+
+.project-images img {
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
+}
+
+.project-images.bcsegui {
+    display: grid;
+    grid-template: 25% 25% 25% 25% / 1fr;
+}
+
+.project-images.vlc {
+    display: grid;
+    grid-template: 33.3% 33.3% 33.3% / 1fr;
+}
+
+.project-images.illusi {
+    display: grid;
+    grid-template: 50% 50% / 50% 50%;
+}
+
+.project.bcsegui:hover ~ .project-images.bcsegui { opacity: 1; right: 0px; }
+.project.vlc:hover ~ .project-images.vlc { opacity: 1; right: 0px; }
+.project.illusi:hover ~ .project-images.illusi { opacity: 1; right: 0px; }
+.project.roze:hover ~ .project-images.roze { opacity: 1; right: 0px; }
+.project.rui:hover ~ .project-images.rui { opacity: 1; right: 0px; }
+
+.education-experience {
+    display: flex;
+    flex-direction: row;
+}
+
+.education-experience table {
+    width: 98%;
+}
+.education-experience thead {
+    text-align: left;
+}
+
+.education {
+    width: 50%;
+}
+
+
+.experience {
+    width: 50%;
+}
+
+.contact-mode {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px;
+}
+.contact-mode h3 {
+    margin: 0px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+}
+.contact-mode a {
+    margin: 0px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+}
+.resume-download a {
+    position: relative;
+    top: 10px;
+    padding: 10px;
+    border-radius: 3px;
+    background-color: var(--shelf-color);
+}
