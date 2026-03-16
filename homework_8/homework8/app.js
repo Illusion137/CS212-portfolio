@@ -116,48 +116,48 @@ const projects_other_data = [
         "github": "",
         "brief_stack": ["TypeScript", "React Native", "Node.js", "Discord"],
         "full_stack": ["TypeScript", "React Native", "Node.js", "Discord", "Expo", "Sentry", "Supabase"],
-        "artwork": "images/illusi_icon.webp",
+        "artwork": "homework8/illusi_icon.webp",
         "full_background_description": "During my sophomore year of high school, I opened my music playlist and discovered an artist that I loved listening to deleted their entire discography. The music app I was using at the time, Musi, didn’t support downloading music, and since they were a small artist, they had no archive accounts. I realized that if I wanted to be able to listen to music without this problem, I would have to make my own music app, which I’d call Illusi. In October 2022, I began doing just that. To build this, I chose the language I was most familiar with, which at the time was JavaScript, and React Native with Expo as the framework. The first year continued with this stack as I built out YouTube playback and downloading support, along with importing playlist support from YouTube, Musi, Amazon Music, and Spotify. At the end of the year, I realized that the code I wrote wasn’t the best, especially the web-scraping code. So over the next month, I rewrote all the code to TypeScript and migrated all of the logic to a separate cross-platform library that would work with both Node.Js and React Native simultaneously. With the cleaner code and improved architecture changes, I added support for SoundCloud playback, as well as full searching, playlist fetching, and playlist transferring support for YouTube, YouTube Music, Apple Music, Amazon Music, Spotify, Musi, and BandLab. Illusi still receives maintenance and feature updates every few months or so.",
-        "full_background_images": ["images/Illusi0.webp", "images/Illusi1.webp", "images/Illusi2.webp", "images/Illusi3.webp"]
+        "full_background_images": ["homework8/Illusi0.webp", "homework8/Illusi1.webp", "homework8/Illusi2.webp", "homework8/Illusi3.webp"]
     },
     {
         "github": "https://github.com/Illusion137/Roze",
         "brief_stack": ["TypeScript", "React Native"],
         "full_stack": ["TypeScript", "React Native", "Expo"],
-        "artwork": "images/roz_icon.webp",
+        "artwork": "homework8/roz_icon.webp",
         "full_background_description": "Throughout my high school years, I thoroughly enjoyed listening to audiobooks to pass the time of not doing anything in my classes. At first, I whipped up a simple Python script that would poorly generate audiobooks with robotic-sounding voices from a special kind of text file. This text file would split the file at custom chapter-break lines and create audio-files foreach of them so that I could have chapter timestamps for them, before stitching them together with FFMPEG. This system worked alright, yet I couldn't stand the robotic voices and how slow it was to generate an audiobook. I’ve already gained some TypeScript experience by now due to working on my music app, Illusi, so TypeScript would be what I would go with. A fully functional CLI tool was developed, with support for .txt, .pdf, .epub, .docx, and .roz, and support for some popular websites like JNovel, Syosetu, and Witch Cult Translations. All these formats would first get compacted into a general format, .roz, which is just a JSON file in disguise, that would extract all paragraphs, headings, and images and put them in order and separate them by chapter. Then by doing a similar process to my Python script, I would generate a audio-file for each paragraph and then stitch them together. This enabled me to both generate chapter timestamps and SRT files for YouTube. Generating each file one by one would take way too long, so all text got put into batches and parallel processed across all chapters, which led to taking around ~5 minutes to generate a ~9-hour audiobook on my Windows PC. In addition to generating only audio, I made sure to put a flag that would allow me to generate an audiovisual book using the images inside the ebook, placing the images exactly where they would appear in the ebook, as in the audio. This CLI tool is fairly complete, with additions to supported formats and improved support for MacOS and Linux. Currently, I’m working on porting the code to be used in React Native through a ‘TypeScript native bridge’ that allows the TypeScript portion to run on Windows, MacOS, Linux, iOS, and Android.",
-        "full_background_images": ["images/roze0.webp"]
+        "full_background_images": ["homework8/roze0.webp"]
     },
     {
         "github": "https://github.com/Illusion137/Everett",
         "demo": "https://sumii.me/everett.html",
         "brief_stack": ["React", "C++", "WebAssembly", "Tauri"],
         "full_stack": ["React", "C++", "CMake", "WebAssembly", "Tauri"],
-        "artwork": "images/nero.webp",
+        "artwork": "homework8/nero.webp",
         "full_background_description": "During my first semester of university, my close friend and roommate had to take General Chemistry I. When he was doing one of his homework assignments, he came to me and asked if there was a way for Desmos to have all the atomic masses of all the elements as constant variables. I thought about it and decided I could make a Google Chrome extension to do just that in around a day. It was simple, a JavaScript file to inject the variable injector file, and the injector file itself, which just took the elements and converted them to latex so they could be treated as variables, then went into the expressions state store for Desmos and injected all the variables. This enabled my friend to get his homework done significantly quicker since he didn’t have to have the periodic table pulled up the whole time, and he was really satisfied with the results. Fast forwarding to my next semester, I had to take Physics II. The workload consisted of many constants to remember, formulas, and units to keep track of. I thought that I could just modify my previous project, Chesmos, which I initially did. Simply changing all the chemical elements to electrical and general physics constants. This was helpful, yet I knew I could further improve on it. I opened up VS Code and got to work in C++, on the new project Nero. The first step was a LaTeX expression lexer, parser, and evaluator. I’ve made lexers, parsers, and evaluators before in Java during my AP Computer Science course, so it didn’t take me too long to have a functional prototype. After writing tests for all the basic operations and functions, I worked on implementing the dimensional analysis into the expressions. Now, with a fairly functional library, I generated a WASM interface for TypeScript and began working on the frontend, Everett. Originally, I was planning on using NextJS, but due to compatibility issues with MathQuill, I decided on plain React. I kept it fairly plain, a list of expressions and unit boxes that would be evaluated through my WASM interface. This wasn’t the end of it; next, I felt like it would be helpful to have an operator to find useful formulas related to the constants I had, a way to rearrange expressions to solve for a specific variable, and a system of linear equations solver for solving circuits using Kirchhoff's laws. Going back to the UI, using the VSCode Milkdown extension as a reference, I put in a WYSIWYG style editor for notes if you are using Everett as an application with Tauri rather than a webapp. From all of this, there is still much more to add to both Everett and Nero.",
-        "full_background_images": ["images/everett0.gif", "images/everett1.gif"]
+        "full_background_images": ["homework8/everett0.gif", "homework8/everett1.gif"]
     },
     {
         "github": "https://github.com/Illusion137/VLCPortfolio",
         "brief_stack": ["TypeScript", "React", "Next"],
         "full_stack": ["TypeScript", "React", "Next"],
-        "artwork": "images/vlc.webp",
+        "artwork": "homework8/vlc.webp",
         "full_background_description": "My high school Film and TV II course required us to build a website that would be a portfolio for all the films we made over the years. Being the only one in the class to have any experience coding, I decided to make my portfolio with NextJS rather than using a website builder. Our interface was supposed to be unique to us, and so I made mine dedicated to VLC, my favorite media player. I also chose to reference it since it seemed that having an embedded video player would fit nicely to showcase films. Over the span of 3 days, I built the website with NextJS, TailwindCSS, Mux, and hosted it on Vercel at illusi.dev. A short project, but it got me a good amount of experience with frontend on the web, rather than just on mobile with React Native.",
-        "full_background_images": ["images/Film0.webp", "images/Film1.webp", "images/Film2.webp"]
+        "full_background_images": ["homework8/Film0.webp", "homework8/Film1.webp", "homework8/Film2.webp"]
     },
     {
         "github": "https://github.com/Illusion137/Battle_Cats_Save_Editor_GUI",
         "brief_stack": ["C++"],
         "full_stack": ["C++"],
-        "artwork": "images/BCSEGUI.webp",
+        "artwork": "homework8/BCSEGUI.webp",
         "full_background_description": "Since I was ~13 years old, I loved playing Battle Cats. As I got further in the game, I wanted to collect some collab characters from some of my favorite animes. These collabs ended years ago without any sign of coming back, so I went to find BCSFE-Python, by fieryhenry. A save editor for Battle Cats. It worked well, but it was a CLI tool, and with having to search through a database of hundreds of cats, it worked, but it wasn’t a pleasant experience. To help not only myself, but others in fieryhenry’s Discord, I made a GUI for the tool using C++ and ImGUI. To help with the user experience, I made the UI heavily resemble Battle Cats’ own UI. It wasn’t a perfectly finished project; however, it worked well enough. Including the large-scale webscraping I had to do to gather assets and cat data, I’d say I learned quite a lot from the project.",
-        "full_background_images": ["images/BC0.webp", "images/BC1.webp", "images/BC2.webp", "images/BC3.webp"] 
+        "full_background_images": ["homework8/BC0.webp", "homework8/BC1.webp", "homework8/BC2.webp", "homework8/BC3.webp"] 
     },
     {
         "github": "https://github.com/Illusion137/Louis",
         "brief_stack": ["C++"],
         "full_stack": ["C++", "CMake"],
-        "artwork": "images/rui.webp",
+        "artwork": "homework8/rui.webp",
         "full_background_description": "As a starting note, this project is still heavily in development. When registering for my second semester classes at NAU, I found it a pain in the process, constantly having to reference several webpages that would log me out every 5 minutes, having to double-check I could make it to classes on time, and triple-checking that the class would work for me and that it didn’t have reserved seats. I would then plot out a C++ library that would allow students to interact with NAU and handle authentication, caching, etc., and would allow students to generate proper schedules without having to worry if the schedule would even work for them or not. In terms of progress of the project, the architecture is all there, from the data collection, prebuilding, and working out how classes would be generated. There is still a need for the proper API to be complete, and likely a user interface that I would build with ImGUI.",
         "full_background_images": []
     }
