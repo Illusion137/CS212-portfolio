@@ -13,19 +13,19 @@ document.querySelector('#resume-download').addEventListener("click", () => {
     }
 });
 
-function getTimeBasedGreeting(){
+function get_time_based_greeting(){
     const hour = new Date().getHours();
     if(hour >= 0 && hour < 12) return "Good Morning,";
     else if(hour >= 12 && hour < 18) return "Good Afternoon,";
     else return "Good Evening,";
 }
 
-function showGreeting(name){
-    const message = getTimeBasedGreeting() + " my name is " + name + "! Welcome to my portfolio!";
+function show_greeting(name){
+    const message = get_time_based_greeting() + " my name is " + name + "! Welcome to my portfolio!";
     document.querySelector('#yahallo').innerHTML = message;
 }
 
-function daysUntilDeadline(now, deadline){
+function days_until_deadline(now, deadline){
     const now_date = new Date(now);
     const deadline_date = new Date(deadline);
     const difference = deadline_date - now_date;
@@ -33,5 +33,5 @@ function daysUntilDeadline(now, deadline){
     return days_difference;
 }
 
-showGreeting(name);
-document.querySelector('#everett-deadline').innerHTML = `Days until deadline: <b>${Math.round(daysUntilDeadline(Date.now(), everett_deadline))}</b>`;
+show_greeting(name);
+document.querySelector('#everett-deadline').innerHTML = `Days until deadline: <b>${Math.round(days_until_deadline(Date.now(), everett_deadline))}</b>`;

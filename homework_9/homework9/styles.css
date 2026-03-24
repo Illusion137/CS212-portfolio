@@ -17,6 +17,8 @@ html[data-bs-theme]:not([data-bs-theme="light"]) .quote {
 }
 
 :root {
+    --dark-red: #A00000;
+    --red: #E02020;
     --bs-primary-rgb: 116, 0, 254;
     --bs-primary: #7400fe;
 
@@ -40,14 +42,27 @@ a:hover {
     color: #ffffff;
 }
 
-li {
+.li {
     margin-right: 5px;
     margin-bottom: 5px;
     filter: drop-shadow(3px 3px 0px var(--primary-color));
     transition: all ease 0.2s;
 }
-li:hover {
+
+li.skill:hover {
+    filter: drop-shadow(3px 3px 0px var(--primary-color));
     text-shadow: 1px 1px 1px var(--href-color), 1px 1px 1px var(--href-color);
+    transform: scale(1.05);
+}
+li.skill span {
+    position: relative;
+    display: inline-block;
+    left: 4px;
+    width: 20px;
+    height: 15px;
+    border-radius: 50px;
+    background-color: var(--red) !important;
+    text-shadow: 1px 1px 1px var(--dark-red), 1px 1px 1px var(--dark-red);
     transform: scale(1.05);
 }
 

@@ -3,22 +3,41 @@ console.log('Hello World!');
 const name = "Daniel Raygoza";
 let resume_download_count = 0;
 
+const nav_sections_data = [
+    {title: "Home", target: "#intro"}, 
+    {title: "Skills", target: "#skills"}, 
+    {title: "Projects", target: "#projects"}, 
+    {title: "Education", target: "#education-experience"}
+].reverse();
+
+nav_sections_data.forEach(section => {
+    const link = $(`<a class="nav-link">${section.title}</a>`);
+    link.on('click', (e) => {
+        e.preventDefault();
+        $('body').animate({
+            scrollTop: $(section.target).offset().top - $('header').outerHeight()
+        }, "fast");
+    })
+    $(".navbar-nav").prepend(link);
+});
+
+
 function increment_resume_download_counter(){
-    document.querySelector('#resume-download-counter').innerHTML = `&nbsp;(${++resume_download_count})`;
+    $('#resume-download-counter').html(`&nbsp;(${++resume_download_count})`);
 }
 
-document.querySelector('#resume-download').addEventListener("click", increment_resume_download_counter);
+$('#resume-download').on("click", (increment_resume_download_counter));
 
-function getTimeBasedGreeting(){
+function get_time_based_greeting(){
     const hour = new Date().getHours();
     if(hour >= 0 && hour < 12) return "Good Morning,";
     else if(hour >= 12 && hour < 18) return "Good Afternoon,";
     else return "Good Evening,";
 }
 
-function showGreeting(name){
-    const message = getTimeBasedGreeting() + " my name is " + name + "! Welcome to my portfolio!";
-    document.querySelector('#yahallo').innerHTML = message;
+function show_greeting(name){
+    const message = get_time_based_greeting() + " my name is " + name + "! Welcome to my portfolio!";
+    $('#yahallo').html(message);
 }
 
 function deadline_status(now, deadline){
@@ -29,7 +48,7 @@ function deadline_status(now, deadline){
     else if(difference > 0) return "Ongoing";
 }
 
-function daysUntilDeadline(now, deadline){
+function days_until_deadline(now, deadline){
     const now_date = new Date(now);
     const deadline_date = new Date(deadline);
     const difference = deadline_date - now_date;
@@ -37,28 +56,104 @@ function daysUntilDeadline(now, deadline){
     return days_difference;
 }
 
-showGreeting(name);
+show_greeting(name);
 
-const skills_dropdown_types = document.querySelectorAll("#skills-dropdown .dropdown-menu .dropdown-item");
+const used_skills = Array.from($(".skill")).map(el => el.innerText);
+
+function get_skill_item_text(skill_item){
+    if(skill_item.text().endsWith("x")) return skill_item.text().slice(0,-1);
+    return skill_item.text();
+}
+
+function update_skills_events(){
+    $(".skill").off();
+    $(".skill").on({
+        'mouseenter': (e) => {
+            if($(e.currentTarget).find('.hovered-skill').length) return;
+            $(e.currentTarget).append('<span class="hovered-skill"><a id="hovered-skill-btn">x</a></span>');
+            $(e.currentTarget).find("#hovered-skill-btn").on('click', (clickEvent) => {
+                clickEvent.stopPropagation();
+                remove_skill($(e.currentTarget));
+            });
+        },
+        'mouseleave': (e) => {
+            $(e.currentTarget).find('.hovered-skill').remove();
+        }
+    });
+    $(".skill").on('click', function(e) {
+        if(e.target !== this) return;
+        const skill_item = $(this);
+        const current_text = get_skill_item_text(skill_item);
+        const input = $("#skill-edit-input");
+        input.off('keydown').off('blur');
+        input.val(current_text).show().trigger("focus");
+        const exit_input = () => input.val("").hide();
+        input.on('keydown', (e) => {
+            if(e.key === 'Enter') {
+                e.preventDefault();
+                if(!used_skills.includes(input.val())) edit_skill(skill_item, input, exit_input);
+                exit_input();
+            }
+            if(e.key === "Escape") {
+                e.preventDefault();
+                exit_input();
+            }
+        });
+        input.on('blur', () => exit_input());
+    });
+}
+update_skills_events();
+
+const skills_dropdown_types = $("#skills-dropdown .dropdown-menu .dropdown-item");
 for(const skill_dropdown_type of Array.from(skills_dropdown_types)){
-    skill_dropdown_type.addEventListener("click", (e) => {
+    $(skill_dropdown_type).on("click", (e) => {
         e.preventDefault();
         const new_text_content = skill_dropdown_type.textContent;
-        const skills_dropdown_btn = document.querySelector("#skills-dropdown button");
-        skills_dropdown_btn.textContent = new_text_content;
+        const skills_dropdown_btn = $("#skills-dropdown button");
+        skills_dropdown_btn.text(new_text_content);
     });
 }
 
+function edit_skill(skill_item, input, exit_input){
+    if(used_skills.includes(input.val())) {
+        exit_input();
+        return false;
+    }
+    const used_skills_index = used_skills.findIndex(v => v === get_skill_item_text(skill_item));
+    if(used_skills_index === -1) {
+        update_skills_events();
+        return false;
+    }
+    used_skills[used_skills_index] = input.val();
+    skill_item.text(input.val());
+    update_skills_events();
+    return true;
+}
+
+function remove_skill(skill_item){
+    const used_skills_index = used_skills.findIndex(v => v === get_skill_item_text(skill_item));
+    used_skills.splice(used_skills_index, 1);
+    skill_item.slideUp();
+    setTimeout(() => skill_item.remove(), 1000);
+    update_skills_events();
+}
+
 function add_skill_to_skill_section_id(section_id, skill){
-    const list = document.querySelector(`#${section_id} ul`);
-    list.insertAdjacentHTML('beforeend', `<li class="badge text-bg-secondary">${skill}</li>`)
+    if(!skill.trim()) return;
+    if(used_skills.includes(skill)) return;
+    const list = $(`#${section_id} ul`);
+    const item = $(`<li class="skill badge text-bg-secondary">${skill}</li>`).hide();
+    list.append(item);
+    item.slideDown();
+    used_skills.push(skill);
+    update_skills_events();
 }
 
 function handle_new_skill_submit(){
-    const skills_dropdown_btn = document.querySelector("#skills-dropdown button");
-    const skills_dropdown_btn_text_content = skills_dropdown_btn.textContent;
-    const skill_input = document.querySelector('#skill-input');
-    const skill_text = skill_input.value;
+    const skills_dropdown_btn = $("#skills-dropdown button");
+    const skills_dropdown_btn_text_content = skills_dropdown_btn.text();
+    const skill_input = $('#skill-input');
+    const skill_text = skill_input.val();
     switch(skills_dropdown_btn_text_content.trim()){
         case "Languages": {
             add_skill_to_skill_section_id("skills-section-languages", skill_text);
@@ -74,94 +169,105 @@ function handle_new_skill_submit(){
         }
         default: break;
     }
-    skill_input.value = "";
+    skill_input.val("");
 }
 
-const project_titles = [
-    "Illusi",
-    "Roze",
-    "Everett",
-    "VLCPortfolio",
-    "Battle Cats Save Editor GUI",
-    "Rui"
-];
-const project_brief_descriptions = [
-    "Universal Music App for iOS made with React Native and Expo.",
-    "Audiobook CLI tool and mobile app for iOS made with React Native and Expo.",
-    "Desmos, but with units, dimensional analysis, and WYSIWYG <code>Markdown</code> notes.",
-    "Film and TV portfolio. Made with Next.js and hosted on Vercel.",
-    "A GUI save editor for the mobile game Battle Cats made with C++ and ImGUI.",
-    "A NAU class scheduler made with C++ and ImGUI."
-];
-const project_expanded_description = [
-    "Inspiration from <a href=\"https://www.feelthemusi.com/\">Musi</a>. Rather a superset of Musi with added features such as, but not limited to: supports importing from any other music service, playlist inheritance, custom search algorithms, <i>backpacking</i> unavailable music and Discord integration.",
-    "Roze creates a standardized ebook format and can convert these formats to audio / audio-visual books: <code>.txt</code>, <code>.pdf</code>, <code>.epub</code>, <code>.docx</code>, <code>.roz</code>, <a href=\"https://j-novel.club/\">JNovel</a>, <a href=\"https://syosetu.com/\">Syosetu</a>, and <a href=\"https://witchculttranslation.com/\">Witch Cult Translations</a>. For Syosetu, Roze can auto-translate the web-novel chapters.",
-    "Built from my custom library <a href=\"https://github.com/Illusion137/Nero\">Nero</a>, which is a custom LaTex parser and math evaluator that automatically does dimensional analysis and finds necessary formulas for the given constants. <br/> Named after the mathmatical witch and her cat, Everett and Nero.",
-    "Can be viewed at <a href=\"https://www.illusi.dev/\">illusi.dev</a>. Design was based on <a href=\"https://www.videolan.org/vlc/\">VLC</a> because the goal was to make a film portfolio and I believed a built-in custom video player would fit nicely.",
-    "Serves as a GUI for JSON save-file exports from <a href=\"https://github.com/fieryhenry/BCSFE-Python\">BCSFE_Python</a>.",
-    "Still in progress, but will be like Jacks Scheduler with builtin Jacks Planner, class distance checking and serve as an API for other students to interact with Louie."
-];
+$("#skill-input").on('keydown', (e) => {
+    if(e.key === 'Enter') {
+        e.preventDefault();
+        handle_new_skill_submit();
+    }
+    if(e.key === "Escape") {
+        e.preventDefault();
+        $("#skill-input").val("");
+    }
+})
 
-const project_deadlines = [
-    "03/18/2026",
-    "04/01/2026",
-    "03/06/2026",
-    "04/03/2026",
-    "04/04/2026",
-    "05/08/2026",
-];
-
-const projects_other_data = [
+const projects = [
     {
+        "title": "Illusi",
         "github": "",
         "brief_stack": ["TypeScript", "React Native", "Node.js", "Discord"],
         "full_stack": ["TypeScript", "React Native", "Node.js", "Discord", "Expo", "Sentry", "Supabase"],
-        "artwork": "homework8/illusi_icon.webp",
+        "artwork": "homework9/illusi_icon.webp",
+        "brief_description": "Universal Music App for iOS made with React Native and Expo.",
+        "expanded_description": "Inspiration from <a href=\"https://www.feelthemusi.com/\">Musi</a>. Rather a superset of Musi with added features such as, but not limited to: supports importing from any other music service, playlist inheritance, custom search algorithms, <i>backpacking</i> unavailable music and Discord integration.",
         "full_background_description": "During my sophomore year of high school, I opened my music playlist and discovered an artist that I loved listening to deleted their entire discography. The music app I was using at the time, Musi, didn’t support downloading music, and since they were a small artist, they had no archive accounts. I realized that if I wanted to be able to listen to music without this problem, I would have to make my own music app, which I’d call Illusi. In October 2022, I began doing just that. To build this, I chose the language I was most familiar with, which at the time was JavaScript, and React Native with Expo as the framework. The first year continued with this stack as I built out YouTube playback and downloading support, along with importing playlist support from YouTube, Musi, Amazon Music, and Spotify. At the end of the year, I realized that the code I wrote wasn’t the best, especially the web-scraping code. So over the next month, I rewrote all the code to TypeScript and migrated all of the logic to a separate cross-platform library that would work with both Node.Js and React Native simultaneously. With the cleaner code and improved architecture changes, I added support for SoundCloud playback, as well as full searching, playlist fetching, and playlist transferring support for YouTube, YouTube Music, Apple Music, Amazon Music, Spotify, Musi, and BandLab. Illusi still receives maintenance and feature updates every few months or so.",
-        "full_background_images": ["homework8/Illusi0.webp", "homework8/Illusi1.webp", "homework8/Illusi2.webp", "homework8/Illusi3.webp"]
+        "full_background_images": ["homework9/Illusi0.webp", "homework9/Illusi1.webp", "homework9/Illusi2.webp", "homework9/Illusi3.webp"],
+        "deadline": "03/18/2026"
     },
     {
+        "title": "Roze",
         "github": "https://github.com/Illusion137/Roze",
         "brief_stack": ["TypeScript", "React Native"],
         "full_stack": ["TypeScript", "React Native", "Expo"],
-        "artwork": "homework8/roz_icon.webp",
+        "artwork": "homework9/roz_icon.webp",
+        "brief_description": "Audiobook CLI tool and mobile app for iOS made with React Native and Expo.",
+        "expanded_description": "Roze creates a standardized ebook format and can convert these formats to audio / audio-visual books: <code>.txt</code>, <code>.pdf</code>, <code>.epub</code>, <code>.docx</code>, <code>.roz</code>, <a href=\"https://j-novel.club/\">JNovel</a>, <a href=\"https://syosetu.com/\">Syosetu</a>, and <a href=\"https://witchculttranslation.com/\">Witch Cult Translations</a>. For Syosetu, Roze can auto-translate the web-novel chapters.",
         "full_background_description": "Throughout my high school years, I thoroughly enjoyed listening to audiobooks to pass the time of not doing anything in my classes. At first, I whipped up a simple Python script that would poorly generate audiobooks with robotic-sounding voices from a special kind of text file. This text file would split the file at custom chapter-break lines and create audio-files foreach of them so that I could have chapter timestamps for them, before stitching them together with FFMPEG. This system worked alright, yet I couldn't stand the robotic voices and how slow it was to generate an audiobook. I’ve already gained some TypeScript experience by now due to working on my music app, Illusi, so TypeScript would be what I would go with. A fully functional CLI tool was developed, with support for .txt, .pdf, .epub, .docx, and .roz, and support for some popular websites like JNovel, Syosetu, and Witch Cult Translations. All these formats would first get compacted into a general format, .roz, which is just a JSON file in disguise, that would extract all paragraphs, headings, and images and put them in order and separate them by chapter. Then by doing a similar process to my Python script, I would generate a audio-file for each paragraph and then stitch them together. This enabled me to both generate chapter timestamps and SRT files for YouTube. Generating each file one by one would take way too long, so all text got put into batches and parallel processed across all chapters, which led to taking around ~5 minutes to generate a ~9-hour audiobook on my Windows PC. In addition to generating only audio, I made sure to put a flag that would allow me to generate an audiovisual book using the images inside the ebook, placing the images exactly where they would appear in the ebook, as in the audio. This CLI tool is fairly complete, with additions to supported formats and improved support for MacOS and Linux. Currently, I’m working on porting the code to be used in React Native through a ‘TypeScript native bridge’ that allows the TypeScript portion to run on Windows, MacOS, Linux, iOS, and Android.",
-        "full_background_images": ["homework8/roze0.webp"]
+        "full_background_images": ["homework9/roze0.webp"],
+        "deadline": "04/01/2026"
     },
     {
+        "title": "Everett",
         "github": "https://github.com/Illusion137/Everett",
         "demo": "https://sumii.me/everett.html",
         "brief_stack": ["React", "C++", "WebAssembly", "Tauri"],
         "full_stack": ["React", "C++", "CMake", "WebAssembly", "Tauri"],
-        "artwork": "homework8/nero.webp",
+        "artwork": "homework9/nero.webp",
+        "brief_description": "Desmos, but with units, dimensional analysis, and WYSIWYG <code>Markdown</code> notes.",
+        "expanded_description": "Built from my custom library <a href=\"https://github.com/Illusion137/Nero\">Nero</a>, which is a custom LaTex parser and math evaluator that automatically does dimensional analysis and finds necessary formulas for the given constants. <br/> Named after the mathmatical witch and her cat, Everett and Nero.",
         "full_background_description": "During my first semester of university, my close friend and roommate had to take General Chemistry I. When he was doing one of his homework assignments, he came to me and asked if there was a way for Desmos to have all the atomic masses of all the elements as constant variables. I thought about it and decided I could make a Google Chrome extension to do just that in around a day. It was simple, a JavaScript file to inject the variable injector file, and the injector file itself, which just took the elements and converted them to latex so they could be treated as variables, then went into the expressions state store for Desmos and injected all the variables. This enabled my friend to get his homework done significantly quicker since he didn’t have to have the periodic table pulled up the whole time, and he was really satisfied with the results. Fast forwarding to my next semester, I had to take Physics II. The workload consisted of many constants to remember, formulas, and units to keep track of. I thought that I could just modify my previous project, Chesmos, which I initially did. Simply changing all the chemical elements to electrical and general physics constants. This was helpful, yet I knew I could further improve on it. I opened up VS Code and got to work in C++, on the new project Nero. The first step was a LaTeX expression lexer, parser, and evaluator. I’ve made lexers, parsers, and evaluators before in Java during my AP Computer Science course, so it didn’t take me too long to have a functional prototype. After writing tests for all the basic operations and functions, I worked on implementing the dimensional analysis into the expressions. Now, with a fairly functional library, I generated a WASM interface for TypeScript and began working on the frontend, Everett. Originally, I was planning on using NextJS, but due to compatibility issues with MathQuill, I decided on plain React. I kept it fairly plain, a list of expressions and unit boxes that would be evaluated through my WASM interface. This wasn’t the end of it; next, I felt like it would be helpful to have an operator to find useful formulas related to the constants I had, a way to rearrange expressions to solve for a specific variable, and a system of linear equations solver for solving circuits using Kirchhoff's laws. Going back to the UI, using the VSCode Milkdown extension as a reference, I put in a WYSIWYG style editor for notes if you are using Everett as an application with Tauri rather than a webapp. From all of this, there is still much more to add to both Everett and Nero.",
-        "full_background_images": ["homework8/everett0.gif", "homework8/everett1.gif"]
+        "full_background_images": ["homework9/everett0.gif", "homework9/everett1.gif"],
+        "deadline": "03/06/2026"
     },
     {
+        "title": "VLCPortfolio",
         "github": "https://github.com/Illusion137/VLCPortfolio",
         "brief_stack": ["TypeScript", "React", "Next"],
         "full_stack": ["TypeScript", "React", "Next"],
-        "artwork": "homework8/vlc.webp",
+        "artwork": "homework9/vlc.webp",
+        "brief_description": "Film and TV portfolio. Made with Next.js and hosted on Vercel.",
+        "expanded_description": "Can be viewed at <a href=\"https://www.illusi.dev/\">illusi.dev</a>. Design was based on <a href=\"https://www.videolan.org/vlc/\">VLC</a> because the goal was to make a film portfolio and I believed a built-in custom video player would fit nicely.",
         "full_background_description": "My high school Film and TV II course required us to build a website that would be a portfolio for all the films we made over the years. Being the only one in the class to have any experience coding, I decided to make my portfolio with NextJS rather than using a website builder. Our interface was supposed to be unique to us, and so I made mine dedicated to VLC, my favorite media player. I also chose to reference it since it seemed that having an embedded video player would fit nicely to showcase films. Over the span of 3 days, I built the website with NextJS, TailwindCSS, Mux, and hosted it on Vercel at illusi.dev. A short project, but it got me a good amount of experience with frontend on the web, rather than just on mobile with React Native.",
-        "full_background_images": ["homework8/Film0.webp", "homework8/Film1.webp", "homework8/Film2.webp"]
+        "full_background_images": ["homework9/Film0.webp", "homework9/Film1.webp", "homework9/Film2.webp"],
+        "deadline": "04/03/2026"
     },
     {
+        "title": "Battle Cats Save Editor GUI",
         "github": "https://github.com/Illusion137/Battle_Cats_Save_Editor_GUI",
         "brief_stack": ["C++"],
         "full_stack": ["C++"],
-        "artwork": "homework8/BCSEGUI.webp",
+        "artwork": "homework9/BCSEGUI.webp",
+        "brief_description": "A GUI save editor for the mobile game Battle Cats made with C++ and ImGUI.",
+        "expanded_description": "Serves as a GUI for JSON save-file exports from <a href=\"https://github.com/fieryhenry/BCSFE-Python\">BCSFE_Python</a>.",
         "full_background_description": "Since I was ~13 years old, I loved playing Battle Cats. As I got further in the game, I wanted to collect some collab characters from some of my favorite animes. These collabs ended years ago without any sign of coming back, so I went to find BCSFE-Python, by fieryhenry. A save editor for Battle Cats. It worked well, but it was a CLI tool, and with having to search through a database of hundreds of cats, it worked, but it wasn’t a pleasant experience. To help not only myself, but others in fieryhenry’s Discord, I made a GUI for the tool using C++ and ImGUI. To help with the user experience, I made the UI heavily resemble Battle Cats’ own UI. It wasn’t a perfectly finished project; however, it worked well enough. Including the large-scale webscraping I had to do to gather assets and cat data, I’d say I learned quite a lot from the project.",
-        "full_background_images": ["homework8/BC0.webp", "homework8/BC1.webp", "homework8/BC2.webp", "homework8/BC3.webp"] 
+        "full_background_images": ["homework9/BC0.webp", "homework9/BC1.webp", "homework9/BC2.webp", "homework9/BC3.webp"],
+        "deadline": "04/04/2026"
     },
     {
+        "title": "Rui",
         "github": "https://github.com/Illusion137/Louis",
         "brief_stack": ["C++"],
         "full_stack": ["C++", "CMake"],
-        "artwork": "homework8/rui.webp",
+        "artwork": "homework9/rui.webp",
+        "brief_description": "A NAU class scheduler made with C++ and ImGUI.",
+        "expanded_description": "Still in progress, but will be like Jacks Scheduler with builtin Jacks Planner, class distance checking and serve as an API for other students to interact with Louie.",
         "full_background_description": "As a starting note, this project is still heavily in development. When registering for my second semester classes at NAU, I found it a pain in the process, constantly having to reference several webpages that would log me out every 5 minutes, having to double-check I could make it to classes on time, and triple-checking that the class would work for me and that it didn’t have reserved seats. I would then plot out a C++ library that would allow students to interact with NAU and handle authentication, caching, etc., and would allow students to generate proper schedules without having to worry if the schedule would even work for them or not. In terms of progress of the project, the architecture is all there, from the data collection, prebuilding, and working out how classes would be generated. There is still a need for the proper API to be complete, and likely a user interface that I would build with ImGUI.",
-        "full_background_images": []
+        "full_background_images": [],
+        "deadline": "05/08/2026"
     }
-];
+]
+
+function sort_projects(sort_mode){
+    switch(sort_mode){
+        default:
+        case "ASC_INDEX": return projects;
+        case "DESC_INDEX": return projects.slice().reverse();
+        case "ASC_DEADLINE": return projects.slice().sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());
+        case "DESC_DEADLINE": return projects.slice().sort((a, b) => new Date(b.deadline).getTime() - new Date(a.deadline).getTime());
+    }
+}
 
 function get_stack_icon(icon_name){
     switch(icon_name){
@@ -188,30 +294,30 @@ function get_stack_icon(icon_name){
     return "";
 }
 
-function insert_project(project_index){
-    const vertical = project_titles[project_index] === "Illusi";
-    const title_id = project_titles[project_index].replaceAll(' ', '-').toLowerCase();
-    const project_card_stack_icons_html = projects_other_data[project_index].brief_stack.map(get_stack_icon).join('\n');
-    const project_card_stack_extended_icons_html = projects_other_data[project_index].full_stack.map(get_stack_icon).join('\n');
-    const project_deadline_status = deadline_status(Date.now(), project_deadlines[project_index]);
-    const project_days_until_deadline = Math.round(daysUntilDeadline(Date.now(), project_deadlines[project_index]));
+function get_project_html(project){
+    const vertical = project.title === "Illusi";
+    const title_id = project.title.replaceAll(' ', '-').toLowerCase();
+    const project_card_stack_icons_html = project.brief_stack.map(get_stack_icon).join('\n');
+    const project_card_stack_extended_icons_html = project.full_stack.map(get_stack_icon).join('\n');
+    const project_deadline_status = deadline_status(Date.now(), project.deadline);
+    const project_days_until_deadline = Math.round(days_until_deadline(Date.now(), project.deadline));
     const project_card_html = `
-        <div class="card shadow-lg">
+        <div class="pproject card shadow-lg">
             <div class="project-image-container">
-                <img class="card-img-top" src="${projects_other_data[project_index].artwork}" width="250" height="250" alt="${project_titles[project_index]} app Icon" data-bs-toggle="modal" data-bs-target="#${title_id}-modal"/>
+                <img class="card-img-top" src="${project.artwork}" width="250" height="250" alt="${project.title} app Icon" data-bs-toggle="modal" data-bs-target="#${title_id}-modal"/>
             </div>
             <div class="pcard card-body">
-                <h3 class="card-title d-inline">${projects_other_data[project_index].github ? `<a href="${projects_other_data[project_index].github}">${project_titles[project_index]}</a>` : project_titles[project_index]}</h3>
+                <h3 class="card-title d-inline">${project.github ? `<a href="${project.github}">${project.title}</a>` : project.title}</h3>
                 ${project_card_stack_icons_html}
-                ${projects_other_data[project_index]?.demo ? `<a href="${projects_other_data[project_index].demo}">(Live Demo)</a>` : ""}
-                <p class="card-text">${project_brief_descriptions[project_index]}</p>
-                <p class="card-text">${project_expanded_description[project_index]}</p>
+                ${project?.demo ? `<a href="${project.demo}">(Live Demo)</a>` : ""}
+                <p class="card-text">${project.brief_description}</p>
+                <p class="card-text">${project.expanded_description}</p>
                 <p id="everett-deadline" class="card-text">${project_deadline_status === "Completed" ? `<b>${project_deadline_status}</b>` : `Days until deadline: <b>${project_days_until_deadline}</b>`}</p>
             </div>
         </div>`;
     const project_modal_image_html = (img) => `
         <div class="image-item">
-            <img class="img-fluid" src="${img}" alt="${project_titles[project_index]} Image"/>
+            <img class="img-fluid" src="${img}" alt="${project.title} Image"/>
         </div>
     `;
     const project_modal_html = `
@@ -219,15 +325,15 @@ function insert_project(project_index){
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header gap-1">
-                        <h5 class="modal-title">${projects_other_data[project_index].github ? `<a href="${projects_other_data[project_index].github}">${project_titles[project_index]}</a>` : project_titles[project_index]}</h5>
+                        <h5 class="modal-title">${project.github ? `<a href="${project.github}">${project.title}</a>` : project.title}</h5>
                         <div class="position-relative" style="top: 3px;">
                             ${project_card_stack_extended_icons_html}
                         </div>
                     </div>
                     <div class="modal-body overflow-y-auto w-100" style="height: 70vh">
-                        <p>${projects_other_data[project_index].full_background_description}</p>
+                        <p>${project.full_background_description}</p>
                         <div class="d-flex gap-1 ${vertical ? "flex-row" : "flex-column"}">
-                            ${projects_other_data[project_index].full_background_images.map(project_modal_image_html).join('')}
+                            ${project.full_background_images.map(project_modal_image_html).join('')}
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -236,13 +342,27 @@ function insert_project(project_index){
                 </div>
             </div>
         </div>`;
-    document.querySelector("#projects-list").insertAdjacentHTML('beforeend', project_card_html);
-    document.querySelector("#content-body").insertAdjacentHTML('beforeend', project_modal_html);
+    return [project_card_html, project_modal_html];
 }
 
-for(let i = 0; i < project_titles.length; i++){
-    insert_project(i);
+for(let i = 0; i < projects.length; i++){
+    const [project_card_html, project_modal_html] = get_project_html(projects[i]);
+    $("#projects-list").append(project_card_html);
+    $("#content-body").append(project_modal_html);
 }
+
+const projects_sort_mode_dropdown_types = $("#projects-sort-dropdown .dropdown-menu .dropdown-item").on('click', (e) => {
+    e.preventDefault();
+    $(".pproject").remove();
+    $("#project-selected-sort-mode").remove();
+    console.log(e.target.getAttribute("mode"))
+    const sorted_projects = sort_projects(e.target.getAttribute("mode"));
+    for(let i = 0; i < sorted_projects.length; i++){
+        const [project_card_html, _] = get_project_html(sorted_projects[i]);
+        $("#projects-list").append(project_card_html);
+    }
+    $(e.target).append(`<span id="project-selected-sort-mode">&nbsp;&#10004;</span>`);
+});
 
 function get_table_html(columns, rows){
     const get_column_html = (col) => `<th>${col}</th>`;
@@ -262,13 +382,13 @@ function get_table_html(columns, rows){
     return table_template;
 }
 
-document.querySelector('#education-section').insertAdjacentHTML('beforeend', get_table_html(
+$('#education-section').append(get_table_html(
     ["Institution", "Status", "GPA"], [
         ["Buena High School", "Graduated", "3.8"],
         ["Northern Arizona University", "Sophmore", "4.0"]
     ]
 ));
-document.querySelector('#experience-section').insertAdjacentHTML('beforeend', get_table_html(
+$('#experience-section').append(get_table_html(
     ["Position", "Institution", "Year(s)"], [
         ["Bug Bounty", "Musi", "2022-2023"],
         ["Lead Software Engineer", "Illusi", "2022-Present"],

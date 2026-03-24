@@ -9,15 +9,15 @@ function increment_resume_download_counter(){
 
 document.querySelector('#resume-download').addEventListener("click", increment_resume_download_counter);
 
-function getTimeBasedGreeting(){
+function get_time_based_greeting(){
     const hour = new Date().getHours();
     if(hour >= 0 && hour < 12) return "Good Morning,";
     else if(hour >= 12 && hour < 18) return "Good Afternoon,";
     else return "Good Evening,";
 }
 
-function showGreeting(name){
-    const message = getTimeBasedGreeting() + " my name is " + name + "! Welcome to my portfolio!";
+function show_greeting(name){
+    const message = get_time_based_greeting() + " my name is " + name + "! Welcome to my portfolio!";
     document.querySelector('#yahallo').innerHTML = message;
 }
 
@@ -29,7 +29,7 @@ function deadline_status(now, deadline){
     else if(difference > 0) return "Ongoing";
 }
 
-function daysUntilDeadline(now, deadline){
+function days_until_deadline(now, deadline){
     const now_date = new Date(now);
     const deadline_date = new Date(deadline);
     const difference = deadline_date - now_date;
@@ -37,7 +37,7 @@ function daysUntilDeadline(now, deadline){
     return days_difference;
 }
 
-showGreeting(name);
+show_greeting(name);
 
 const skills_dropdown_types = document.querySelectorAll("#skills-dropdown .dropdown-menu .dropdown-item");
 for(const skill_dropdown_type of Array.from(skills_dropdown_types)){
@@ -194,7 +194,7 @@ function insert_project(project_index){
     const project_card_stack_icons_html = projects_other_data[project_index].brief_stack.map(get_stack_icon).join('\n');
     const project_card_stack_extended_icons_html = projects_other_data[project_index].full_stack.map(get_stack_icon).join('\n');
     const project_deadline_status = deadline_status(Date.now(), project_deadlines[project_index]);
-    const project_days_until_deadline = Math.round(daysUntilDeadline(Date.now(), project_deadlines[project_index]));
+    const project_days_until_deadline = Math.round(days_until_deadline(Date.now(), project_deadlines[project_index]));
     const project_card_html = `
         <div class="card shadow-lg">
             <div class="project-image-container">
