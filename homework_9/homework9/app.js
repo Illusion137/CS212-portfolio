@@ -14,10 +14,10 @@ nav_sections_data.forEach(section => {
     const link = $(`<a class="nav-link">${section.title}</a>`);
     link.on('click', (e) => {
         e.preventDefault();
-        $('body').animate({
+        $('html, body').animate({
             scrollTop: $(section.target).offset().top - $('header').outerHeight()
         }, "fast");
-    })
+    });
     $(".navbar-nav").prepend(link);
 });
 
@@ -355,7 +355,6 @@ const projects_sort_mode_dropdown_types = $("#projects-sort-dropdown .dropdown-m
     e.preventDefault();
     $(".pproject").remove();
     $("#project-selected-sort-mode").remove();
-    console.log(e.target.getAttribute("mode"))
     const sorted_projects = sort_projects(e.target.getAttribute("mode"));
     for(let i = 0; i < sorted_projects.length; i++){
         const [project_card_html, _] = get_project_html(sorted_projects[i]);
