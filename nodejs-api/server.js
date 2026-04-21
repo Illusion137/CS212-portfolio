@@ -12,7 +12,7 @@ app.use(express.json());
 
 app.get("/books", (_, res) => {
     res.send(books);
-})
+});
 
 app.listen(PORT, () => {
     console.log(`Listening on port: ${PORT}`);
